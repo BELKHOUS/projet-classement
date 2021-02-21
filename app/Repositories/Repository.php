@@ -20,6 +20,7 @@ class Repository
     {   
         //throw new Exception("bonjour bonjour");
        // DB::table('teams')->insert($team);
+       //yfcygfgfygtfytf
         $id = DB::table('teams')->insertGetId($team);
  
         return $id;
