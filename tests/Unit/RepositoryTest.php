@@ -128,10 +128,10 @@ function testAddUserThrowsExceptionIfEmailAlreadyExists(): void
 
 function testChangePassword(): void 
 {
-    $this->repository->addUser('test@example.com', 'secret1');
-    $this->repository->changePassword('test@example.com', 'secret1', 'secret2');
-    $user = $this->repository->getUser('test@example.com', 'secret2');
-    $this->assertEquals($user, ['id'=>1, 'email'=> 'test@example.com']);
+    $this->repository->addUser('lyes.belkhous@hotmail.com', 'secret1');
+    $this->repository->changePassword('lyes.belkhous@hotmail.com', 'secret1', 'secret2');
+    $user=$this->repository->getUser('lyes.belkhous@hotmail.com', 'secret2');
+    $this->assertEquals($user, ['id'=>1, 'email'=> 'lyes.belkhous@hotmail.com']);
     $this->expectException(Exception::class);
     $this->expectExceptionMessage('Utilisateur inconnu');
     $user = $this->repository->getUser('test@example.com', 'secret1');

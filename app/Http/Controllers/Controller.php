@@ -99,7 +99,9 @@ class Controller extends BaseController
             'score1' => ['required', 'integer', 'between:0,50'],
             'team_name'=>['min:5']
         ];
+        
         $validatedData = $request->validate($rules,$messages);
+        
         try{
             
             $matcheId = $this->repository->insertMatch(['team0' => $validatedData['team0'],
@@ -110,7 +112,9 @@ class Controller extends BaseController
                                                  
                                                   ]); 
             $this->repository->updateRanking();
-            return redirect()->route('ranking.show');
+            //return redirect()->route('ranking.show');
+            return $validatedData;
+
         } catch(Exception $exception){
           
             $teams = $this->repository->teams();

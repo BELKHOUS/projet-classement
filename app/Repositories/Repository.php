@@ -153,22 +153,21 @@ class Repository
         
         function getUser(string $email, string $password): array
         {
-            $verifidEmail = htmlentities($email);
-            $tabPasswordHashAndMail = DB::table('users')
-            ->where('email', $verifidEmail)
-            ->where('password_hash', Hash::make($password))
-            ->get()->toArray();
 
-            
-            if(count($tabPasswordHashAndMail) == 0 ) 
+            $tabUser = $this->getTableUser($email);
+            if(count($tabUser) === 0 ) 
             {
                 throw new Exception('Utilisateur inconnu');
             }
-
+           
+            if(! (Hash::check($password, $tabUser[0]['password_hash'])))
+            {
+                throw new Exception('Utilisateur inconnu');
+            }
+            dump($email);
 
             $res = DB::table('users')
             ->where('email', $email)
-            ->Where('password_hash', $tabPasswordHashAndMail['password_hash'])
             ->get(['id','email'])->toArray();
       
             return $res[0];
@@ -183,7 +182,7 @@ class Repository
             
 
             $tablePasseWordHash = $tabUser[0]['password_hash'];
-            ;
+            
             $userNewPasseWordHash1 = Hash::make($oldPassword);
             $userNewPasseWordHash2 = Hash::make($oldPassword);
 
