@@ -21,8 +21,26 @@ Classement
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($ranking as $user)
+                @foreach($ranking as $user)
+                @if($cookie === $user['team_id'])
+                
+                    
+                    <tr class="table-primary">
+                    <td>{{ $user['rank'] }}</td>
+                    <td><a href="{{ route('teams.show', ['teamId'=>$user['team_id']]) }}">{{ $user['name'] }}</a></td>
+                    <td>{{ $user['match_played_count'] }}</td>
+                    <td>{{ $user['won_match_count'] }}</td>
+                    <td>{{ $user['draw_match_count'] }}</td>
+                    <td>{{ $user['lost_match_count'] }}</td>
+                    <td>{{ $user['goal_for_count'] }}</td>
+                    <td>{{ $user['goal_against_count'] }}</td>
+                    <td>{{ $user['goal_difference'] }}</td>
+                    <td>{{ $user['points'] }}</td>
+                    </tr>
+                @endif 
+                @if($cookie !== $user['team_id'])
                     <tr>
+                    
                     <td>{{ $user['rank'] }}</td>
                     <td><a href="{{ route('teams.show', ['teamId'=>$user['team_id']]) }}">{{ $user['name'] }}</a></td>
                     <td>{{ $user['match_played_count'] }}</td>
@@ -34,6 +52,7 @@ Classement
                     <td>{{ $user['goal_difference'] }}</td>
                     <td>{{ $user['points'] }}</td>
                 </tr>
+                @endif 
                     @endforeach
                 </tbody>
 </table>

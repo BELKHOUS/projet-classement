@@ -11,15 +11,26 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use App\Repositories\Data;
 
+use App\Http\Middleware\TrimStrings;
+use App\Http\Middleware\ConvertEmptyStringsToNull;
+
+use Symfony\Component\HttpFoundation\Cookie;
+
+
 
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
     
-    public function showRanking()
+    public function showRanking(Request $request)
     {
+        
         $ranking = $this->repository->sortedRanking();
-        return view('ranking', ['ranking' => $ranking],);
+        $cookie = $request->cookie('followed_team');
+        //dump("id equipe = ".$cookie);
+        //dd($cookie);
+        //Cookie::get('followed_team');
+        return view('ranking', ['ranking' => $ranking , 'cookie' => $cookie]);
     }
 //------------------------------------------------------------------------------------------------------------------------------------------------
     public function showTeam(int $teamId)
@@ -48,7 +59,7 @@ class Controller extends BaseController
         
         $rules = ['team_name' => ['required','min:3', 'max:20', 'unique:teams,name']];
         $validatedData = $request->validate($rules,$messages);
-        
+        //dd($validatedData);
         try {
             // appels aux méthodes de l'objet de la classe Repository
             $teamId = $this->repository->insertTeam(['name' => $validatedData['team_name']]);
@@ -97,7 +108,7 @@ class Controller extends BaseController
             'time' => ['required', 'date_format:H:i'],
             'score0' => ['required', 'integer', 'between:0,50'],
             'score1' => ['required', 'integer', 'between:0,50'],
-            'team_name'=>['min:5']
+            
         ];
         
         $validatedData = $request->validate($rules,$messages);
@@ -112,16 +123,70 @@ class Controller extends BaseController
                                                  
                                                   ]); 
             $this->repository->updateRanking();
-            //return redirect()->route('ranking.show');
-            return $validatedData;
+            return redirect()->route('ranking.show');
 
         } catch(Exception $exception){
           
-            $teams = $this->repository->teams();
-           // return view('match_create',['teams' => $teams])->withErrors("Impossible de crée le matche");
-           return $lyes;
+           $teams = $this->repository->teams();
+           return view('match_create',['teams' => $teams])->withErrors("Impossible de crée le matche");
+          
         }
        
+    }
+    public function showLoginForm()
+    {
+        return view('login');
+    }
+
+    public function login(Request $request, Repository $repository)
+    {
+        $rules = [
+            'email' => ['required', 'email', 'exists:users,email'],
+            'password' => ['required']
+        ];
+        $messages = [
+            'email.required' => 'Vous devez saisir un e-mail.',
+            'email.email' => 'Vous devez saisir un e-mail valide.',
+            'email.exists' => "Cet utilisateur n'existe pas.",
+            'password.required' => "Vous devez saisir un mot de passe.",
+        ];
+        $validatedData = $request->validate($rules, $messages);
+        try {
+        # TODO 1 : lever une exception si le mot de passe de l'utilisateur n'est pas correct
+        $email = $validatedData['email'];
+        $password = $validatedData['password'];
+        $value = $repository->getUser($email, $password);
+       
+
+        # TODO 2 : se souvenir de l'authentification de l'utilisateur
+        $request->session()->put('user', $value);
+        
+        //dd($request->session()->get('user'));
+        
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors("Impossible de vous authentifier.");
+        }
+        return redirect()->route('ranking.show');
+    }
+
+    public function followTeam(int $teamId)
+    {
+        return redirect()->route('ranking.show')->cookie('followed_team', $teamId);
+    }
+
+    public function logout(Request $request) {
+        
+        $ranking = $this->repository->sortedRanking();
+        $cookie = $request->cookie('followed_team');
+        //dump("id equipe = ".$cookie);
+        //dd($cookie);
+        //Cookie::get('followed_team');
+        dump($request->session()->get('user'));
+        $request->session()->forget('user');
+        dump("cookies = ".$cookie);
+        dump($request->session()->get('user'));
+        return view('ranking', ['ranking' => $ranking , 'cookie' => $cookie]);
+        
     }
 //------------------------------------------------------------------------------------------------------
     public function __construct(Repository $repository)
