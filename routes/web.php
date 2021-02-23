@@ -31,6 +31,11 @@ Route::get('/teams/{teamId}/follow', [Controller::class, 'followTeam'])->where('
 
 Route::post('/logout', [Controller::class, 'logout'])->name('logout.post');
 
+//suppression d'une équipe
+
+Route::get('/team/delete', [Controller::class, 'deleteTeam'])->name('delete_team.create');
+Route::post('/team_delete', [Controller::class, 'StoreDelete_team'])->name('delete_team.store');
+
 
 
 

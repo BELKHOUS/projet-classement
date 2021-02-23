@@ -223,4 +223,20 @@ class Repository
             ->update([ 'password_hash'=> Hash::make($newPassword)]);
 
         }
+        function deleteTeam(int $teamId): void 
+        {
+            DB::table('matches')
+            ->where('team0', $teamId)
+            ->orwhere('team1', $teamId)
+            ->delete();
+
+            DB::table('ranking')
+            ->where('team_id', $teamId)
+            ->delete(); 
+           
+            DB::table('teams')
+            ->where('id', $teamId)
+            ->delete();
+            
+        }
 }

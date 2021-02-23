@@ -120,7 +120,6 @@ class Controller extends BaseController
 
             'team_name.min' => "Le nom doit contenir au moins :min caractères.",
         ];
-        $lyes = $request->input('team0');
         $rules = [
             'team0' => ['required', 'exists:teams,id'],
             'team1' => ['required', 'exists:teams,id'],
@@ -207,6 +206,38 @@ class Controller extends BaseController
         //dump($request->session()->get('user'));
         return view('ranking', ['ranking' => $ranking , 'cookie' => $cookie]);
         
+    }
+
+    public function deleteTeam(Request $request)
+    {
+        //dump($request->session()->get('user'));
+         if($request->session()->get('user')==null){
+            return view ('login');
+        }
+
+        $teams = $this->repository->teams();
+        return view('delete_team',['teams' => $teams]);
+         
+    }
+
+    function StoreDelete_team(Request $request, Repository $repository){
+        $rules = [
+            'team_delete' => ['required']
+        ];
+        $messages = [
+            'team_delete.required' => 'Vous devez choisir une equipe a supprimer',
+        ];
+
+        $validatedData = $request->validate($rules, $messages);
+        $teamId=$validatedData['team_delete'];
+        dump($teamId);
+        $repository->deleteTeam($teamId);
+        //dump("id equipe = ".$cookie);
+        //dd($cookie);
+        //Cookie::get('followed_team');
+        //dump($request->session()->get('user'));
+        return view('ranking', ['ranking' => $ranking , 'cookie' => $cookie]);
+        //return "Bonjour lilyyyyyyyy";
     }
 //------------------------------------------------------------------------------------------------------
     public function __construct(Repository $repository)

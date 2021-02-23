@@ -3,9 +3,6 @@
 @section('title', 'Création d\'un match')
 
 @section('content')
-<script>
-
-</script>
 <form method="POST" action="{{route('matches.store')}}">
   @csrf
 @if ($errors->any())
