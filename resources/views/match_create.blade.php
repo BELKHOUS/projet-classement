@@ -7,6 +7,7 @@
 
 </script>
 <form method="POST" action="{{route('matches.store')}}">
+  @csrf
 @if ($errors->any())
         <div class="alert alert-warning">
             Le matche n'a pas pu être ajouté &#9785;

@@ -93,10 +93,15 @@ class Repository
         DB::table('ranking')->delete();
         $teams = $this->teams();
         $matches = $this->matches();
-
+        
+        
 
         $ranking = new Ranking();
         $ranking = $ranking->sortedRanking($teams,$matches);
+        if(count($ranking) == 0)
+            {    
+                throw new Exception('Équipe inconnue');
+            }
         DB::table('ranking')->insert($ranking);
         
     }

@@ -3,7 +3,8 @@
 @section('title', 'Authentification')
 
 @section('content')
-<form method="POST" action="{{route('login.post')}}"" >
+
+<form method="POST" action="{{route('login.post')}}" >
     @if ($errors->any())
         <div class="alert alert-warning">
           Vous n'avez pas pu être authentifié &#9785;
