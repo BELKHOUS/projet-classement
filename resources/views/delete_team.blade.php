@@ -3,7 +3,9 @@
 @section('title', 'Suppression d\'une equipe')
 
 @section('content')
-<form method="POST" action="{{route('delete_team.store')}}">
+<form method="POST" action="{{route('delete_team.store')}}"
+onsubmit="return confirm('Etes vous sur de vouloir supprimer cette equipe ? &#9756') ;"
+>
 
   @csrf
 @if ($errors->any())
@@ -21,7 +23,7 @@
       @endforeach
       </select>
     </div>
-
+    
     <button type="submit" class="btn btn-primary">supprimer</button>
 </form>
 @endsection

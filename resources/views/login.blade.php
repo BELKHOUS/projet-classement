@@ -33,4 +33,6 @@
     </div>
     <button type="submit" class="btn btn-primary">Se connecter</button>
 </form>
+<br><br>
+<a href="{{ route('changePassword') }}" style = "float:right">Changer votre mot de passe</a>
 @endsection

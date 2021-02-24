@@ -204,7 +204,8 @@ class Controller extends BaseController
         $request->session()->forget('user');
         //dump("cookies = ".$cookie);
         //dump($request->session()->get('user'));
-        return view('ranking', ['ranking' => $ranking , 'cookie' => $cookie]);
+        return redirect()->route('ranking.show');
+        //return view('ranking', ['ranking' => $ranking , 'cookie' => $cookie]);
         
     }
 
@@ -212,7 +213,8 @@ class Controller extends BaseController
     {
         //dump($request->session()->get('user'));
          if($request->session()->get('user')==null){
-            return view ('login');
+          
+            return redirect()->route('login');
         }
 
         $teams = $this->repository->teams();
@@ -230,15 +232,66 @@ class Controller extends BaseController
 
         $validatedData = $request->validate($rules, $messages);
         $teamId=$validatedData['team_delete'];
-        dump($teamId);
+        //dump($teamId);
+        
         $repository->deleteTeam($teamId);
+       
+        $ranking = $this->repository->sortedRanking();
+        $cookie = $request->cookie('followed_team');
         //dump("id equipe = ".$cookie);
-        //dd($cookie);
-        //Cookie::get('followed_team');
-        //dump($request->session()->get('user'));
+        //dump($cookie);
+        
         return view('ranking', ['ranking' => $ranking , 'cookie' => $cookie]);
-        //return "Bonjour lilyyyyyyyy";
     }
+
+    function changePasswordForm()
+        {
+            return view('change_password');
+
+        }
+
+
+
+
+        function storeChangePassword(Request $request, Repository $repository){
+            $rules = [
+                'email' => ['required', 'email', 'exists:users,email'],
+                'oldPassword' => ['required'],
+                'newPassword' => ['required']
+            ];
+            $messages = [
+                'email.required' => 'vous devez saisire votre email',
+                'email.exists' => 'cette email n\'éxiste pas',
+                'oldPassword.required' => 'champs obligatoire',
+                'email.newPassword' => 'champs obligatoire'
+            ];
+    
+            $validatedData = $request->validate($rules, $messages);
+
+            //dump($teamId);
+            
+           
+            $ranking = $this->repository->sortedRanking();
+            $cookie = $request->cookie('followed_team');
+           
+           // function changePassword(string $email, string $oldPassword, string $newPassword): void 
+           $email = $validatedData['email'];
+           $oldPassword = $validatedData['oldPassword'];
+           $newPassword = $validatedData['newPassword'];
+           // dd( $email);
+           try{
+               $repository->changePassword($email, $oldPassword, $newPassword);
+           
+            }catch(Exception $e){
+            
+                return redirect()->back()->withInput()->withErrors("Impossible de changer le mot de passe");
+           }
+           
+            //dump("id equipe = ".$cookie);
+            //dump($cookie);
+            
+            return view('ranking', ['ranking' => $ranking , 'cookie' => $cookie]);
+        }
 //------------------------------------------------------------------------------------------------------
     public function __construct(Repository $repository)
     {

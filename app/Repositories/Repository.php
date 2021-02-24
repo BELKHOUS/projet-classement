@@ -185,7 +185,6 @@ class Repository
         {
             $tabUser = $this->getTableUser($email);
             
-
             $tablePasseWordHash = $tabUser[0]['password_hash'];
             
             $userNewPasseWordHash1 = Hash::make($oldPassword);
@@ -239,4 +238,6 @@ class Repository
             ->delete();
             
         }
+
+        
 }

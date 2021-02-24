@@ -36,6 +36,10 @@ Route::post('/logout', [Controller::class, 'logout'])->name('logout.post');
 Route::get('/team/delete', [Controller::class, 'deleteTeam'])->name('delete_team.create');
 Route::post('/team_delete', [Controller::class, 'StoreDelete_team'])->name('delete_team.store');
 
+//Changement mot de passe
+Route::get('/changePassword', [Controller::class, 'changePasswordForm'])->name('changePassword');
+Route::post('/changePassword', [Controller::class, 'storeChangePassword'])->name('changePassword.post');
+
 
 
 
