@@ -40,6 +40,9 @@ Route::post('/team_delete', [Controller::class, 'StoreDelete_team'])->name('dele
 Route::get('/changePassword', [Controller::class, 'changePasswordForm'])->name('changePassword');
 Route::post('/changePassword', [Controller::class, 'storeChangePassword'])->name('changePassword.post');
 
+//Ajouter un utilisateur
+Route::get('/addUser', [Controller::class, 'addUserForm'])->name('addUser');
+Route::post('/addUser', [Controller::class, 'storeaddUser'])->name('addUser.post');
 
 
 

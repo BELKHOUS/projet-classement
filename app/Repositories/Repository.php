@@ -151,6 +151,15 @@ class Repository
         {
             // TODO
             $passwordHash =  Hash::make($password);
+           
+            $tabUser = $this->getTableUser($email);
+            
+            if(count($tabUser) !== 0 ) 
+            {
+                throw new Exception('Utilisateur Existant');
+            }
+
+
             $tab = ['email'=> $email , 'password_hash'=>$passwordHash];
             $id = DB::table('users')->insertGetId($tab);
             return $id;
@@ -169,7 +178,7 @@ class Repository
             {
                 throw new Exception('Utilisateur inconnu');
             }
-            dump($email);
+            //dump($email);
 
             $res = DB::table('users')
             ->where('email', $email)

@@ -179,7 +179,7 @@ class Controller extends BaseController
 
         # TODO 2 : se souvenir de l'authentification de l'utilisateur
         $request->session()->put('user', $value);
-        
+        //dump(session()->get('user')['email']);
         //dd($request->session()->get('user'));
         
         } catch (Exception $e) {
@@ -263,7 +263,7 @@ class Controller extends BaseController
                 'email.required' => 'vous devez saisire votre email',
                 'email.exists' => 'cette email n\'éxiste pas',
                 'oldPassword.required' => 'champs obligatoire',
-                'email.newPassword' => 'champs obligatoire'
+                'newPassword.required' => 'champs obligatoire'
             ];
     
             $validatedData = $request->validate($rules, $messages);
@@ -291,6 +291,61 @@ class Controller extends BaseController
             //dump($cookie);
             
             return view('ranking', ['ranking' => $ranking , 'cookie' => $cookie]);
+        }
+
+        function addUserForm (){
+            return view('addUser');
+            return view('change_password');
+        }
+
+        function storeaddUser(Repository $repository, Request $request)
+        {
+            $rules = 
+            [
+                'email' => ['required', 'email'],
+                'emailConfirmation' => ['required', 'email'],
+                'password' =>['required'],
+                'passwordConfirmation' =>['required']
+
+            ];
+            $messages = [
+                'email.required' => 'vous devez saisire votre email',
+                'emailConfirmation.required' => 'vous devez saisire votre email',
+                'password.required' => 'champs obligatoire',
+                'passwordConfirmation.required' => 'champs obligatoire'
+            ];
+
+            $validatedData = $request->validate($rules, $messages);
+            //dd($request->all()['g-recaptcha-response']);
+            //dd($request->all());
+            
+
+            $email = $validatedData['email'];
+            $password =$validatedData['password'];
+
+            $emailConfirmation = $validatedData['emailConfirmation'];
+            $passwordConfirmation =$validatedData['passwordConfirmation'];
+
+            if($email === $emailConfirmation &&  $password ===  $passwordConfirmation && $request->all()['g-recaptcha-response']!==null)
+            {
+                $ranking = $this->repository->sortedRanking();
+                $cookie = $request->cookie('followed_team');
+                try
+                {
+                    $repository->addUser($email, $password);
+
+                    $value = $repository->getUser($email, $password);
+                    $request->session()->put('user', $value);
+
+                    return view('ranking', ['ranking' => $ranking , 'cookie' => $cookie]);
+                }catch(Exception $e)
+                {
+                    return redirect()->back()->withInput()->withErrors("Impossible de vous ajouter");
+                }
+            }
+
+
+            return redirect()->back()->withInput()->withErrors("Impossible de vous ajouter");
         }
 //------------------------------------------------------------------------------------------------------
     public function __construct(Repository $repository)

@@ -1,3 +1,3 @@
 -- SQLite
 SELECT *
-FROM teams;
+FROM users;

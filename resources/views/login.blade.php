@@ -35,4 +35,6 @@
 </form>
 <br><br>
 <a href="{{ route('changePassword') }}" style = "float:right">Changer votre mot de passe</a>
+<br><br>
+<a href="{{ route('addUser') }}" style = "float:right">inscivez vous ici</a>
 @endsection
