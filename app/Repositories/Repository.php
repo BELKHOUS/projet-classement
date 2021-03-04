@@ -25,6 +25,7 @@ class Repository
  
         return $id;
     }
+//--------------------------------------------------------------------------------------------------------------
    function insertMatch(array $match): int
     {
         
@@ -35,18 +36,19 @@ class Repository
         
         return $id;
     }
+//--------------------------------------------------------------------------------------------------------------
     function teams(): array
     {
         $team =  DB::table('teams')->orderBy('id', 'asc')->get()->toArray();
 
         return $team;
     }
-
+//--------------------------------------------------------------------------------------------------------------
     function matches(): array
     {
         return ($matches = DB::table('matches')->orderBy('id','asc')->get()->toArray());
     }
-    
+//--------------------------------------------------------------------------------------------------------------  
     function fillDatabase(): void {
         $data = new Data();
         $teams =$data->teams();
@@ -66,6 +68,7 @@ class Repository
         $this->matches();
         
     }
+//--------------------------------------------------------------------------------------------------------------
     function team($teamId) : array
     {
         //$data = new Data();
@@ -88,6 +91,7 @@ class Repository
             }
             return $teams[0];  
     }
+//--------------------------------------------------------------------------------------------------------------
     function updateRanking(): void{
 
         DB::table('ranking')->delete();
@@ -105,6 +109,7 @@ class Repository
         DB::table('ranking')->insert($ranking);
         
     }
+//--------------------------------------------------------------------------------------------------------------
     function sortedRanking(): array
     {
         $rows = DB::table('ranking')->join('teams','ranking.team_id', '=', 'teams.id')
@@ -117,6 +122,7 @@ class Repository
         return $rows->toArray();
 
     }
+//--------------------------------------------------------------------------------------------------------------
     function teamMatches($teamId): array
     {
     //teams AS t0 ON matches.team0 = t0.id   
@@ -129,6 +135,7 @@ class Repository
         ->get(['matches.*','t0.name AS name0','t1.name AS name1']);
         return $rows->toArray(); 
     }
+//--------------------------------------------------------------------------------------------------------------
     function rankingRow($teamId): array
     {
         $classement = $this->sortedRanking();
@@ -147,106 +154,109 @@ class Repository
         return $classementEquipe[0];
 
         }
-        function addUser(string $email, string $password): int
-        {
+//--------------------------------------------------------------------------------------------------------------
+    function addUser(string $email, string $password): int
+    {
             // TODO
-            $passwordHash =  Hash::make($password);
+        $passwordHash =  Hash::make($password);
            
-            $tabUser = $this->getTableUser($email);
+        $tabUser = $this->getTableUser($email);
             
-            if(count($tabUser) !== 0 ) 
-            {
-                throw new Exception('Utilisateur Existant');
-            }
-
-
-            $tab = ['email'=> $email , 'password_hash'=>$passwordHash];
-            $id = DB::table('users')->insertGetId($tab);
-            return $id;
-        }
-        
-        function getUser(string $email, string $password): array
+        if(count($tabUser) !== 0 ) 
         {
+            throw new Exception('Utilisateur Existant');
+        }
 
-            $tabUser = $this->getTableUser($email);
-            if(count($tabUser) === 0 ) 
-            {
-                throw new Exception('Utilisateur inconnu');
-            }
+
+        $tab = ['email'=> $email , 'password_hash'=>$passwordHash];
+        $id = DB::table('users')->insertGetId($tab);
+        return $id;
+        }
+//-------------------------------------------------------------------------------------------------------------- 
+    function getUser(string $email, string $password): array
+    {
+
+        $tabUser = $this->getTableUser($email);
+        if(count($tabUser) === 0 ) 
+        {
+            throw new Exception('Utilisateur inconnu');
+        }
            
-            if(! (Hash::check($password, $tabUser[0]['password_hash'])))
-            {
+        if(! (Hash::check($password, $tabUser[0]['password_hash'])))
+        {
                 throw new Exception('Utilisateur inconnu');
-            }
+        }
             //dump($email);
 
-            $res = DB::table('users')
-            ->where('email', $email)
-            ->get(['id','email'])->toArray();
+        $res = DB::table('users')
+        ->where('email', $email)
+        ->get(['id','email'])->toArray();
       
-            return $res[0];
+        return $res[0];
         }
-        function getTableUser($email): array{
-            return DB::table('users')->where('email', $email)->get()->toArray();
-        }
-        
-        function changePassword(string $email, string $oldPassword, string $newPassword): void 
+//--------------------------------------------------------------------------------------------------------------
+    function getTableUser($email): array{
+        return DB::table('users')->where('email', $email)->get()->toArray();
+    }
+//--------------------------------------------------------------------------------------------------------------       
+    function changePassword(string $email, string $oldPassword, string $newPassword): void 
         {
-            $tabUser = $this->getTableUser($email);
+        $tabUser = $this->getTableUser($email);
             
-            $tablePasseWordHash = $tabUser[0]['password_hash'];
+        $tablePasseWordHash = $tabUser[0]['password_hash'];
             
-            $userNewPasseWordHash1 = Hash::make($oldPassword);
-            $userNewPasseWordHash2 = Hash::make($oldPassword);
+        $userNewPasseWordHash1 = Hash::make($oldPassword);
+        $userNewPasseWordHash2 = Hash::make($oldPassword);
 
-            //dump($userNewPasseWordHash1);
-           // dd($userNewPasseWordHash2);
+        //dump($userNewPasseWordHash1);
+        // dd($userNewPasseWordHash2);
 
-            //dd(count($tabUser));
+        //dd(count($tabUser));
             
-            if(count($tabUser[0])===0) 
-            {
-                throw new Exception('Utilisateur inconnu');
-            }
+        if(count($tabUser[0])===0) 
+        {
+            throw new Exception('Utilisateur inconnu');
+        }
 
 
 
-            if(! (Hash::check($oldPassword, $tabUser[0]['password_hash']))) 
-            {
-                throw new Exception('Utilisateur inconnu');
-            }
+        if(! (Hash::check($oldPassword, $tabUser[0]['password_hash']))) 
+        {
+            throw new Exception('Utilisateur inconnu');
+        }
             
 
-            //dump($ok);
+        //dump($ok);
 
-           // dd('mot de pass ok et email existant');
-            //dd(Hash::make($oldPassword));
+        // dd('mot de pass ok et email existant');
+        //dd(Hash::make($oldPassword));
            
             
 
             
 
-            DB::table('users')
-            ->where('email', $tabUser[0]['email'])
-            ->update([ 'password_hash'=> Hash::make($newPassword)]);
+        DB::table('users')
+        ->where('email', $tabUser[0]['email'])
+        ->update([ 'password_hash'=> Hash::make($newPassword)]);
 
-        }
-        function deleteTeam(int $teamId): void 
-        {
-            DB::table('matches')
-            ->where('team0', $teamId)
-            ->orwhere('team1', $teamId)
-            ->delete();
+    }
+//--------------------------------------------------------------------------------------------------------------
+    function deleteTeam(int $teamId): void 
+    {
+        DB::table('matches')
+        ->where('team0', $teamId)
+        ->orwhere('team1', $teamId)
+        ->delete();
 
-            DB::table('ranking')
-            ->where('team_id', $teamId)
-            ->delete(); 
+        DB::table('ranking')
+        ->where('team_id', $teamId)
+        ->delete(); 
            
-            DB::table('teams')
-            ->where('id', $teamId)
-            ->delete();
+        DB::table('teams')
+        ->where('id', $teamId)
+        ->delete();
             
-        }
-
+    }
+//--------------------------------------------------------------------------------------------------------------
         
 }
