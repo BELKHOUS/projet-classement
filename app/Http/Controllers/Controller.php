@@ -60,6 +60,7 @@ class Controller extends BaseController
     {
         if($request->session()->get('user')==null){
             //return view ('login');
+            
             return redirect()->route('login')->withErrors("Vous devez vous authentifier d'abord");
         }
 
@@ -190,13 +191,14 @@ class Controller extends BaseController
 
     public function followTeam(int $teamId)
     {
+        //dd(cookie('followed_team', $teamId));
         return redirect()->route('ranking.show')->cookie('followed_team', $teamId);
+        
     }
 
     public function logout(Request $request) {
         
-        $ranking = $this->repository->sortedRanking();
-        $cookie = $request->cookie('followed_team');
+        //$ranking = $this->repository->sortedRanking();
         //dump("id equipe = ".$cookie);
         //dd($cookie);
         //Cookie::get('followed_team');
@@ -238,7 +240,7 @@ class Controller extends BaseController
        
         $ranking = $this->repository->sortedRanking();
         $cookie = $request->cookie('followed_team');
-        //dump("id equipe = ".$cookie);
+        //dd(cookie('followed_team'));
         //dump($cookie);
         
         return view('ranking', ['ranking' => $ranking , 'cookie' => $cookie]);
@@ -249,9 +251,6 @@ class Controller extends BaseController
             return view('change_password');
 
         }
-
-
-
 
         function storeChangePassword(Request $request, Repository $repository){
             $rules = [

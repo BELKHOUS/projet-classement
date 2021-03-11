@@ -9,15 +9,15 @@ Classement
 <thead class="thead-dark">
                     <tr>
                         <th>N°</th> 
-                        <td>Equipe</td>
-                        <td>MJ</td>
-                        <td>G</td>
-                        <td>N</td>
-                        <td>P</td>
-                        <td>BP</td>                                 
-                        <td>BC</td>
-                        <td>DB</td>
-                        <td>PTS</td>
+                        <th>Equipe</th>
+                        <th>MJ</th>
+                        <th>G</th>
+                        <th>N</th>
+                        <th>P</th>
+                        <th>BP</th>                                 
+                        <th>BC</th>
+                        <th>DB</th>
+                        <th>PTS</th>
                     </tr>
                 </thead>
                 <tbody>
